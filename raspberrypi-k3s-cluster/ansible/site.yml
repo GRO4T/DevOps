@@ -1,0 +1,6 @@
+---
+- name: Configure Raspberry Pis
+  hosts: raspberries
+  roles:
+    - common
+    - k3s_node
