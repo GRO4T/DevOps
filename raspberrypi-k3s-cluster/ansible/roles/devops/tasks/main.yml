@@ -1,0 +1,30 @@
+- name: Ensure Pip and dev dependencies are installed.
+  package:
+    name:
+      - python3-pip
+      - python3-dev
+      - python3-yaml
+    state: present
+  become: yes
+
+# TODO: Test if below is necessary
+# - name: Ensure pyhelm and dependencies are installed.
+#   pip:
+#     name:
+#       - pygit2
+#       - pyhelm
+#     state: present
+
+- name: Add stevehipwell helm chart repo
+  kubernetes.core.helm_repository:
+    name: stevehipwell
+    repo_url: "https://stevehipwell.github.io/helm-charts/"
+  become: yes
+
+- name: Install Nexus
+  kubernetes.core.helm:
+    name: devops
+    chart_ref: stevehipwell/nexus3
+    release_namespace: devops
+    create_namespace: true
+  become: yes

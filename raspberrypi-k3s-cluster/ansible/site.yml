@@ -1,6 +1,26 @@
 ---
 - name: Configure Raspberry Pis
+  strategy: free
   hosts: raspberries
-  roles:
-    - common
-    - k3s_node
+  debugger: on_failed
+  tasks:
+    - name: Configure k3s node
+      import_role:
+        name: k3s_node
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      tags: k3s_node
+    
+    - name: Configure DevOps tools
+      import_role:
+        name: devops
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      tags: devops
+    
+    - name: Configure node for local debugging
+      import_role:
+        name: debug
+      tags: debug

@@ -1,3 +1,7 @@
+- name: Install PyYAML
+  pip:
+    name: pyyaml
+    executable: pip3
 
 - name: Enable container features
   replace:
@@ -16,15 +20,26 @@
   when: cgroup.changed
   become: yes
 
-- name: Try to run k3s command 
-  command: k3s
-  register: k3s_test
-
-- name: Determine whether k3s is installed
-  set_fact:
-    k3s:
-      is_installed: "{{ ('command not found' in k3s_test.stdout) | ternary(false, true) }}"
+- name: Check if k3s is installed
+  is_installed:
+    name: k3s
+  register: k3s
 
 - name: Install k3s
   shell: curl -sfL https://get.k3s.io | sh - 
   when: not k3s.is_installed
+
+- name: Check if Helm is installed
+  is_installed:
+    name: helm
+  register: helm
+
+- name: Install Helm
+  shell: |
+    mkdir -p ~/install/helm
+    cd ~/install/helm
+    wget https://get.helm.sh/helm-v3.13.0-linux-arm64.tar.gz
+    tar -zxvf helm-v3.13.0-linux-arm64.tar.gz
+    mv linux-arm64/helm /usr/local/bin/helm
+  become: yes
+  when: not helm.is_installed

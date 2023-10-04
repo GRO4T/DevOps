@@ -1,0 +1,19 @@
+- name: Install packages useful for local debugging
+  ansible.builtin.package:
+    name:
+      - vim
+      - lm-sensors
+    state: present
+  become: yes
+
+- name: Export KUBECONFIG
+  lineinfile:
+    path: /home/pi/.bashrc
+    line: export KUBECONFIG=/etc/rancher/k3s/k3s.yaml 
+    create: yes
+
+- name: Export K8S_AUTH_KUBECONFIG
+  lineinfile:
+    path: /home/pi/.bashrc
+    line: export K8S_AUTH_KUBECONFIG=/etc/rancher/k3s/k3s.yaml 
+    create: yes
