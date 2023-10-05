@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-deployment
+  labels:
+    app: nexus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus
+  template:
+    metadata:
+      labels:
+        app: nexus
+    spec:
+      containers:
+      - name: nexus
+        image: docker.io/klo2k/nexus3:latest
+
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests:
+            memory: "500Mi"
+            cpu: "250m"
+
+        ports:
+        - name: main-port
+          containerPort: 8081
+        - name: docker-reg-port
+          containerPort: 8082
+
+        startupProbe:
+          httpGet:
+            path: /
+            port: main-port
+          failureThreshold: 30
+          periodSeconds: 10
+
