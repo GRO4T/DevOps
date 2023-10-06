@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overengineered-deployment
+  labels:
+    app: overengineered
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: overengineered
+  template:
+    metadata:
+      labels:
+        app: overengineered
+    spec:
+      containers:
+      - name: overengineered
+        image: dkolaska/overengineered:latest
+
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests:
+            memory: "500Mi"
+            cpu: "250m"
+
+        ports:
+        - name: main-port
+          containerPort: 8080
+
+        livenessProbe:
+          httpGet:
+            path: /api/v1/product
+            port: main-port
+          initialDelaySeconds: 120
+          periodSeconds: 10
